@@ -10,10 +10,24 @@ function App() {
     async function loadCourses() {
       try {
         const result = await fetchCourses();
-        if (result.error) throw new Error(result.error.message);
-        setCourses(result.data || []);
+        console.log('🔍 Full API response:', result);
+        console.log('🔍 result.data:', result.data);
+        console.log('🔍 Type of result.data:', typeof result.data);
+        console.log('🔍 result.status:', result.status);
+        
+        // Check if response has the expected structure
+        if (result.status === 'success' && result.data) {
+          console.log('✅ Success! Courses:', result.data);
+          console.log('✅ Number of courses:', result.data.length);
+          setCourses(result.data);
+        } else if (result.status === 'failed') {
+          throw new Error(result.message || 'Failed to fetch courses');
+        } else {
+          console.log('⚠️ Unexpected response structure:', result);
+          setCourses([]);
+        }
       } catch (err) {
-        console.error(err);
+        console.error('❌ Error:', err);
         setError("Failed to fetch courses from backend.");
       } finally {
         setLoading(false);
@@ -38,7 +52,9 @@ function App() {
             <ul style={{ listStyle: "none", padding: 0 }}>
               {courses.map((course) => (
                 <li key={course.id} style={{ margin: "0.5rem 0" }}>
-                  {course.name}
+                  <strong>{course.name}</strong>
+                  {course.professor && ` - ${course.professor}`}
+                  {course.department && ` (${course.department})`}
                 </li>
               ))}
             </ul>
