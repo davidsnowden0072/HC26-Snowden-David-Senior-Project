@@ -37,8 +37,7 @@ app.get("/ping-supabase", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("courses")
-      .select("*")
-      .limit(1);
+      .select("*");
     
     if (error) throw error;
 
