@@ -1,26 +1,38 @@
-import { useEffect, useState } from "react";
-import { fetchCourses } from "./api";
+import { useState, useEffect } from 'react';
+import { fetchCourses } from './api';
+import { filterCourses, getUniqueDepartments } from './utils/helpers';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import CourseList from './components/CourseList';
+import './App.css';
 
 function App() {
+  // State management
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch courses from API on component mount
   useEffect(() => {
     async function loadCourses() {
       try {
         const result = await fetchCourses();
-        
         if (result.status === 'success' && result.data) {
-          setCourses(result.data);
+          // Add default ratings (until reviews table exists)
+          const coursesWithRatings = result.data.map(course => ({
+            ...course,
+            rating: 0.0,
+            numReviews: 0
+          }));
+          setCourses(coursesWithRatings);
         } else if (result.status === 'failed') {
           throw new Error(result.message || 'Failed to fetch courses');
-        } else {
-          setCourses([]);
         }
       } catch (err) {
         console.error('Error fetching courses:', err);
-        setError("Failed to fetch courses from backend.");
+        setError('Failed to load courses. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -29,54 +41,32 @@ function App() {
     loadCourses();
   }, []);
 
+  // Filter courses and get departments
+  const filteredCourses = filterCourses(courses, searchTerm, selectedDepartment);
+  const departments = getUniqueDepartments(courses);
+
   return (
-    <div style={{ textAlign: "center", marginTop: "10%" }}>
-      <h1>Hello EduRate!</h1>
-      <p>My course review platform is taking shape 🎓</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <Navbar />
 
-      {loading && <p>Loading courses...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* Hero Section with Search */}
+      <Hero
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedDepartment={selectedDepartment}
+        setSelectedDepartment={setSelectedDepartment}
+        departments={departments}
+      />
 
-      {!loading && !error && (
-        <div style={{ marginTop: "2rem" }}>
-          <h2>Available Courses</h2>
-          
-          {courses.length > 0 ? (
-            <ul style={{ 
-              listStyle: "none", 
-              padding: 0,
-              maxWidth: "600px",
-              margin: "0 auto"
-            }}>
-              {courses.map((course) => (
-                <li 
-                  key={course.id} 
-                  style={{ 
-                    margin: "1rem 0",
-                    padding: "1.5rem",
-                    backgroundColor: "#f0f8ff",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                    textAlign: "left"
-                  }}
-                >
-                  <h3 style={{ margin: "0 0 0.5rem 0", color: "#2c3e50" }}>
-                    {course.Course_name}
-                  </h3>
-                  <p style={{ margin: "0.25rem 0", color: "#555" }}>
-                    <strong>Department:</strong> {course.Department}
-                  </p>
-                  <p style={{ margin: "0.25rem 0", color: "#555" }}>
-                    <strong>Course ID:</strong> {course.Course_ID}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No courses available yet.</p>
-          )}
-        </div>
-      )}
+      {/* Main Content - Course Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <CourseList
+          courses={filteredCourses}
+          loading={loading}
+          error={error}
+        />
+      </div>
     </div>
   );
 }
