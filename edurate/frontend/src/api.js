@@ -5,3 +5,33 @@ export async function fetchCourses() {
   const data = await response.json();
   return data;
 }
+
+//*******Start of fetching functions for reviews**********
+
+// Fetch single course with reviews
+export async function fetchCourse(id) {
+  const response = await fetch(`${API_URL}/api/courses/${id}`);
+  const data = await response.json();
+  return data;
+}
+
+// Fetch reviews for a course
+export async function fetchReviews(courseId) {
+  const response = await fetch(`${API_URL}/api/courses/${courseId}/reviews`);
+  const data = await response.json();
+  return data;
+}
+
+// Submit a new review
+export async function submitReview(courseId, reviewData) {
+  const response = await fetch(`${API_URL}/api/courses/${courseId}/reviews`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reviewData),
+  });
+  const data = await response.json();
+  return data;
+} 
+//*******End of fetching functions for reviews**********

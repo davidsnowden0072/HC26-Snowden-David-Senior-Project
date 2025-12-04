@@ -53,6 +53,123 @@ app.get("/ping-supabase", async (req, res) => {
   }
 });
 
+// Start of course review endpoints!!!!!!!
+
+// GET reviews for a specific course
+app.get("/api/courses/:id/reviews", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("course_id", id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    
+    res.json({ 
+      success: true, 
+      data: data 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      error: err.message 
+    });
+  }
+});
+
+// POST new review
+app.post("/api/courses/:id/reviews", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating, comment, student_name } = req.body;
+    
+    // Validation
+    if (!rating || !comment) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Rating and comment are required" 
+      });
+    }
+    
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Rating must be between 1 and 5" 
+      });
+    }
+    
+    const { data, error } = await supabase
+      .from("reviews")
+      .insert([{ 
+        course_id: parseInt(id),
+        rating: parseInt(rating),
+        comment,
+        student_name: student_name || "Anonymous"
+      }])
+      .select();
+
+    if (error) throw error;
+    
+    res.status(201).json({ 
+      success: true, 
+      message: "Review submitted successfully",
+      data: data[0]
+    });
+  } catch (err) {
+    res.status(400).json({ 
+      success: false, 
+      error: err.message 
+    });
+  }
+});
+
+// GET course with average rating
+app.get("/api/courses/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get course details
+    const { data: course, error: courseError } = await supabase
+      .from("courses")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (courseError) throw courseError;
+    
+    // Get reviews for this course
+    const { data: reviews, error: reviewsError } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("course_id", id);
+
+    if (reviewsError) throw reviewsError;
+    
+    // Calculate average rating
+    const avgRating = reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
+    
+    res.json({ 
+      success: true, 
+      data: {
+        ...course,
+        rating: avgRating,
+        numReviews: reviews.length
+      }
+    });
+  } catch (err) {
+    res.status(404).json({ 
+      success: false, 
+      error: "Course not found" 
+    });
+  }
+});
+// End of course review endpoints !!!!!!!!!!
+
 // 7. Start server at the end
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);

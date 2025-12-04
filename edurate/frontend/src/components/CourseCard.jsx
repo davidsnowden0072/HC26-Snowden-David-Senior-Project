@@ -1,8 +1,19 @@
+import { useNavigate } from 'react-router-dom';
 import { getRatingColor } from '../utils/helpers';
 
 function CourseCard({ course }) {
+  const navigate = useNavigate();
+
+  // Navigate to course details page when card is clicked
+  const handleClick = () => {
+    navigate(`/course/${course.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+    <div 
+      onClick={handleClick}
+      className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+    >
       {/* Card Header - Course Info and Rating */}
       <div className="flex justify-between items-start mb-4">
         {/* Course Details */}
@@ -23,13 +34,13 @@ function CourseCard({ course }) {
           </p>
         </div>
 
-        {/* Rating Badge */}
+        {/* Rating Badge - Color coded by rating score */}
         <div className={`${getRatingColor(course.rating)} text-white w-16 h-16 rounded-lg flex flex-col items-center justify-center flex-shrink-0 ml-4`}>
           {/* Rating Number */}
           <div className="text-2xl font-bold leading-none">
             {course.rating === 0 ? 'N/A' : course.rating.toFixed(1)}
           </div>
-          {/* Rating Scale */}
+          {/* Rating Scale - Only show if rating exists */}
           {course.rating > 0 && (
             <div className="text-[10px] mt-0.5">
               / 5.0
