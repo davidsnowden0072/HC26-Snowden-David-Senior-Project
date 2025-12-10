@@ -1,3 +1,13 @@
+/**
+ * CourseCard.jsx
+ * 
+ * Displays a single course as a clickable card showing:
+ * - Course name, department, and ID
+ * - Average rating badge (color-coded)
+ * - Number of reviews
+ * 
+ * Clicking the card navigates to the course details page.
+ */
 import { useNavigate } from 'react-router-dom';
 import { getRatingColor } from '../utils/helpers';
 

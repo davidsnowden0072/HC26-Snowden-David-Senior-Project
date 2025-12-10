@@ -1,3 +1,11 @@
+/**
+ * api.js
+ * 
+ * Central API service for communicating with the Express backend.
+ * Handles all HTTP requests for courses and reviews.
+ * 
+ * Base URL is configured via environment variable VITE_API_URL.
+ */
 const API_URL = import.meta.env.VITE_API_URL; // this will be set in Vercel
 console.log("API_URL:", API_URL);
 export async function fetchCourses() {

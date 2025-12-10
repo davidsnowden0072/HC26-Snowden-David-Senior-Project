@@ -1,5 +1,18 @@
+/**
+ * ReviewForm.jsx
+ * 
+ * Form component for submitting course reviews.
+ * Allows users to:
+ * - Select a star rating (1-5)
+ * - Write a text review (minimum 10 characters)
+ * - Optionally provide their name
+ * 
+ * Validates input and displays success/error messages.
+ */
+
 import { useState } from 'react';
 import { submitReview } from '../api';
+import { MIN_RATING, MAX_RATING, MIN_COMMENT_LENGTH, SUCCESS_MESSAGE_DURATION } from '../constants';
 
 function ReviewForm({ courseId, onReviewSubmitted }) {
   const [rating, setRating] = useState(0);
@@ -18,8 +31,13 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
       return;
     }
     
-    if (comment.trim().length < 10) {
-      setError('Comment must be at least 10 characters');
+    if (rating < MIN_RATING || rating > MAX_RATING) {
+      setError(`Rating must be between ${MIN_RATING} and ${MAX_RATING}`);
+      return;
+    }
+    
+    if (comment.trim().length < MIN_COMMENT_LENGTH) {
+      setError(`Comment must be at least ${MIN_COMMENT_LENGTH} characters`);
       return;
     }
     
@@ -42,8 +60,8 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
         // Notify parent to reload data
         onReviewSubmitted();
         
-        // Hide success message after 3 seconds
-        setTimeout(() => setSuccess(false), 3000);
+        // Hide success message after configured duration
+        setTimeout(() => setSuccess(false), SUCCESS_MESSAGE_DURATION);
       } else {
         setError(result.error || 'Failed to submit review');
       }
@@ -53,6 +71,12 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
       setSubmitting(false);
     }
   };
+
+  // Generate array of star ratings based on constants
+  const ratingOptions = Array.from(
+    { length: MAX_RATING }, 
+    (_, i) => i + MIN_RATING
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
@@ -65,7 +89,7 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
             Your Rating *
           </label>
           <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
+            {ratingOptions.map((star) => (
               <button
                 key={star}
                 type="button"
@@ -80,7 +104,7 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
           </div>
           {rating > 0 && (
             <p className="text-sm text-gray-600 mt-1">
-              You rated: {rating} out of 5
+              You rated: {rating} out of {MAX_RATING}
             </p>
           )}
         </div>
@@ -99,7 +123,7 @@ function ReviewForm({ courseId, onReviewSubmitted }) {
             required
           />
           <p className="text-xs text-gray-500 mt-1">
-            {comment.length} characters (minimum 10)
+            {comment.length} characters (minimum {MIN_COMMENT_LENGTH})
           </p>
         </div>
 

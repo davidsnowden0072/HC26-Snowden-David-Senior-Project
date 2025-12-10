@@ -1,12 +1,31 @@
-// Helper function to determine rating badge color based on score
+/**
+ * helpers.js
+ * 
+ * Utility functions for course filtering, searching, and rating display.
+ * Uses constants from constants.js for consistent values across the app.
+ */
+
+import { RATING_GREAT, RATING_GOOD, COLORS } from '../constants';
+
+/**
+ * Determine rating badge color based on score
+ * @param {number} rating - Course rating (0-5)
+ * @returns {string} Tailwind CSS color class
+ */
 export const getRatingColor = (rating) => {
-  if (rating >= 4.0) return 'bg-red-600';      // Red for great ratings
-  if (rating >= 3.0) return 'bg-orange-500';   // Orange for good ratings
-  if (rating > 0) return 'bg-gray-600';        // Gray for okay ratings
-  return 'bg-gray-400';                        // Light gray for no rating
+  if (rating >= RATING_GREAT) return COLORS.GREAT;
+  if (rating >= RATING_GOOD) return COLORS.GOOD;
+  if (rating > 0) return COLORS.OKAY;
+  return COLORS.NONE;
 };
 
-// Filter courses based on search term and department
+/**
+ * Filter courses based on search term and department
+ * @param {Array} courses - Array of course objects
+ * @param {string} searchTerm - Search query for course name or ID
+ * @param {string} selectedDepartment - Department filter ('All' or department name)
+ * @returns {Array} Filtered array of courses
+ */
 export const filterCourses = (courses, searchTerm, selectedDepartment) => {
   return courses.filter(course => {
     const matchesSearch = 
@@ -21,7 +40,11 @@ export const filterCourses = (courses, searchTerm, selectedDepartment) => {
   });
 };
 
-// Extract unique departments from courses
+/**
+ * Extract unique departments from courses array
+ * @param {Array} courses - Array of course objects
+ * @returns {Array} Array of unique department names with 'All' prepended
+ */
 export const getUniqueDepartments = (courses) => {
   return ['All', ...new Set(courses.map(c => c.Department))];
 };
