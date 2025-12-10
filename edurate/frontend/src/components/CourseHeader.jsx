@@ -1,3 +1,16 @@
+/**
+ * CourseHeader.jsx
+ * 
+ * Header component for the course details page.
+ * Displays course information including name, department, course ID, and overall rating.
+ * Provides navigation back to the main course listing page.
+ * 
+ * Features:
+ * - Back button to return to homepage
+ * - Course title and metadata display
+ * - Color-coded rating badge showing average rating and review count
+ */
+
 import { useNavigate } from 'react-router-dom';
 import { getRatingColor } from '../utils/helpers';
 

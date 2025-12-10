@@ -1,3 +1,17 @@
+/**
+ * CourseList.jsx
+ * 
+ * Container component that displays a grid of course cards.
+ * Handles multiple UI states including loading, error, empty, and populated views.
+ * Provides a section header with course count and renders CourseCard components
+ * in a responsive grid layout.
+ * 
+ * Props:
+ * - courses: Array of course objects to display
+ * - loading: Boolean indicating if data is being fetched
+ * - error: Error message string if fetch failed
+ */
+
 import CourseCard from './CourseCard';
 
 function CourseList({ courses, loading, error }) {

@@ -1,3 +1,16 @@
+/**
+ * Navbar.jsx
+ * 
+ * Top navigation bar component for the application.
+ * Displays the EduRate branding and navigation links for main sections.
+ * Features a navy blue background consistent with the application theme.
+ * 
+ * Currently includes:
+ * - EduRate logo/brand name
+ * - Courses navigation button (active)
+ * - Professors navigation button (inactive/placeholder)
+ */
+
 function Navbar() {
   return (
     <nav className="bg-blue-900 shadow-md">

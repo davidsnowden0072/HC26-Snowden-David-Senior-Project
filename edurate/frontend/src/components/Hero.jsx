@@ -1,3 +1,18 @@
+/**
+ * Hero.jsx
+ * 
+ * Hero section component for the homepage featuring search and filter functionality.
+ * Displays a title, subtitle, and interactive controls for finding courses.
+ * Provides a text search input for course names/IDs and a department filter dropdown.
+ * 
+ * Props:
+ * - searchTerm: Current search query string
+ * - setSearchTerm: Function to update search query
+ * - selectedDepartment: Currently selected department filter
+ * - setSelectedDepartment: Function to update department filter
+ * - departments: Array of department names for the dropdown options
+ */
+
 function Hero({ searchTerm, setSearchTerm, selectedDepartment, setSelectedDepartment, departments }) {
   return (
     <div className="bg-white border-b border-gray-200">

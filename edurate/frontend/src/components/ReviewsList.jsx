@@ -1,3 +1,14 @@
+/**
+ * ReviewsList.jsx
+ * 
+ * Container component that displays all reviews for a course.
+ * Shows a heading with review count and renders individual ReviewCard components.
+ * Handles empty state when no reviews exist, encouraging first review submission.
+ * 
+ * Props:
+ * - reviews: Array of review objects to display
+ */
+
 import ReviewCard from './ReviewCard';
 
 function ReviewsList({ reviews }) {

@@ -1,3 +1,20 @@
+/**
+ * CourseDetails.jsx
+ * 
+ * Page component for displaying detailed course information and reviews.
+ * Fetches and displays course data, allows users to submit reviews, and shows all existing reviews.
+ * Handles loading, error, and success states with appropriate UI feedback.
+ * 
+ * Features:
+ * - Displays course header with rating and metadata
+ * - Review submission form (left column)
+ * - List of all course reviews (right column)
+ * - Automatic data refresh after review submission
+ * - Navigation back to homepage on error
+ * 
+ * Route: /course/:id
+ */
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchCourse, fetchReviews } from '../api';

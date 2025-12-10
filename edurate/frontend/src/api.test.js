@@ -1,3 +1,16 @@
+/**
+ * Course.test.js
+ * 
+ * Unit tests for the Course and Review data models.
+ * Validates that model classes correctly initialize, transform data,
+ * and provide accurate helper methods for UI display logic.
+ * 
+ * Tests cover:
+ * - Course model property mapping and rating display
+ * - Review model property mapping and anonymous detection
+ * - Edge cases for courses with/without reviews
+ */
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Course } from './models/Course';
 import { Review } from './models/Review';

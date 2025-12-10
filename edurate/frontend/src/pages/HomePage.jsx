@@ -1,3 +1,19 @@
+/**
+ * HomePage.jsx
+ * 
+ * Main landing page component for the EduRate application.
+ * Displays the course catalog with search and filter functionality.
+ * Fetches all courses from the API and provides interactive controls for browsing.
+ * 
+ * Features:
+ * - Navigation bar with branding
+ * - Hero section with search and department filter
+ * - Responsive grid of course cards
+ * - Real-time filtering based on search term and department
+ * - Loading and error state handling
+ * route: /
+ */
+
 import { useState, useEffect } from 'react';
 import { fetchCourses } from '../api';
 import { filterCourses, getUniqueDepartments } from '../utils/helpers';

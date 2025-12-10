@@ -1,3 +1,14 @@
+/**
+ * ReviewCard.jsx
+ * 
+ * Individual review display component for course reviews.
+ * Shows student name (or Anonymous), submission date, star rating, and review text.
+ * Presents information in a clean card layout with visual star rating display.
+ * 
+ * Props:
+ * - review: Object containing review data (student_name, created_at, rating, comment)
+ */
+
 function ReviewCard({ review }) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
