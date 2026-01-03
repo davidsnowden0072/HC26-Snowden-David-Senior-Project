@@ -28,30 +28,25 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function loadCourses() {
-      try {
-        const result = await fetchCourses();
-        if (result.status === 'success' && result.data) {
-          const coursesWithRatings = result.data.map(course => ({
-            ...course,
-            rating: 0.0,
-            numReviews: 0
-          }));
-          setCourses(coursesWithRatings);
-        } else if (result.status === 'failed') {
-          throw new Error(result.message || 'Failed to fetch courses');
-        }
-      } catch (err) {
-        console.error('Error fetching courses:', err);
-        setError('Failed to load courses. Please try again later.');
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  async function loadCourses() {
+    try {
+      const result = await fetchCourses();
+      if (result.success && result.data) {
+        setCourses(result.data); // ← Just this, no hardcoding!
+      } else {
+        throw new Error(result.error || 'Failed to fetch courses');
       }
+    } catch (err) {
+      console.error('Error fetching courses:', err);
+      setError('Failed to load courses. Please try again later.');
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadCourses();
-  }, []);
+  loadCourses();
+}, []);
 
   const filteredCourses = filterCourses(courses, searchTerm, selectedDepartment);
   const departments = getUniqueDepartments(courses);

@@ -5,9 +5,10 @@
  * Configures middleware, routes, and starts the server.
  */
 
-// 1. Load environment variables
-import dotenv from "dotenv";
-dotenv.config();
+// 1. Load environment variables FIRST
+import 'dotenv/config';
+
+console.log("🔍 SUPABASE_KEY length:", process.env.SUPABASE_KEY?.length);
 
 // 2. Import dependencies
 import express from "express";
@@ -16,7 +17,7 @@ import cors from "cors";
 // 3. Import routes and middleware
 import courseRoutes from './routes/courses.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
-import { supabase } from './config/supabase.js';
+// DON'T import supabase here - it's imported inside the routes
 
 // 4. Initialize Express app
 const app = express();
@@ -36,6 +37,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/ping-supabase", async (req, res) => {
+  // Import supabase only when needed
+  const { supabase } = await import('./config/supabase.js');
+  
   try {
     const { data, error } = await supabase
       .from("courses")

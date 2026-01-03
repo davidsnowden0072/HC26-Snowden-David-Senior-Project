@@ -3,6 +3,7 @@
  * 
  * Routes for course and review operations.
  * Handles:
+ * - GET /api/courses - Get all courses with average ratings
  * - GET /api/courses/:id - Get single course with average rating
  * - GET /api/courses/:id/reviews - Get all reviews for a course
  * - POST /api/courses/:id/reviews - Submit a new review
@@ -13,6 +14,58 @@ import { supabase } from '../config/supabase.js';
 import { MIN_RATING, MAX_RATING, HTTP_STATUS } from '../constants.js';
 
 const router = express.Router();
+
+/**
+ * GET /api/courses
+ * Fetch all courses with their average ratings and review counts
+ */
+router.get('/', async (req, res) => {
+  try {
+    console.log("📍 Fetching all courses with ratings");
+    
+    // Get all courses
+    const { data: courses, error: coursesError } = await supabase
+      .from("courses")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (coursesError) throw coursesError;
+    
+    // Get all reviews
+    const { data: allReviews, error: reviewsError } = await supabase
+      .from("reviews")
+      .select("course_id, rating");
+
+    if (reviewsError) throw reviewsError;
+    
+    // Calculate ratings for each course
+    const coursesWithRatings = courses.map(course => {
+      const courseReviews = allReviews.filter(r => r.course_id === course.id);
+      const avgRating = courseReviews.length > 0
+        ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
+        : 0;
+      
+      return {
+        ...course,
+        rating: avgRating,
+        numReviews: courseReviews.length
+      };
+    });
+    
+    console.log("✅ Returning", coursesWithRatings.length, "courses with ratings");
+    
+    res.json({
+      success: true,
+      data: coursesWithRatings
+    });
+  } catch (err) {
+    console.error("💥 Error in GET /api/courses:", err.message);
+    res.status(HTTP_STATUS.SERVER_ERROR).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
 
 /**
  * GET /api/courses/:id
