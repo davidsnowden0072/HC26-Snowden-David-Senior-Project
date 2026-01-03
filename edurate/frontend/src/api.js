@@ -6,10 +6,11 @@
  * 
  * Base URL is configured via environment variable VITE_API_URL.
  */
-const API_URL = import.meta.env.VITE_API_URL; // this will be set in Vercel
+const API_URL = import.meta.env.VITE_API_URL;
 console.log("API_URL:", API_URL);
+
 export async function fetchCourses() {
-  const response = await fetch(`${API_URL}/ping-supabase`);
+  const response = await fetch(`${API_URL}/api/courses`);
   const data = await response.json();
   return data;
 }
