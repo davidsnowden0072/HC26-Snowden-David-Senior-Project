@@ -20,8 +20,8 @@ export const RATING_GOOD = 3.0;
 
 // Rating colors (Tailwind classes)
 export const COLORS = {
-  GREAT: 'bg-red-600',
-  GOOD: 'bg-orange-500',
-  OKAY: 'bg-gray-600',
-  NONE: 'bg-gray-400'
+  GREAT: 'bg-green-500',    // Green for great
+  GOOD: 'bg-yellow-400',    // Yellow for good
+  OKAY: 'bg-red-500',       // Red for poor (flipped!)
+  NONE: 'bg-gray-400'       // Gray for no rating
 };
