@@ -8,7 +8,7 @@
  * Features:
  * - Displays course header with rating and metadata
  * - Review submission form (left column)
- * - List of all course reviews (right column)
+ * - List of all course reviews with voting functionality (right column)
  * - Automatic data refresh after review submission
  * - Navigation back to homepage on error
  * 
@@ -109,7 +109,7 @@ function CourseDetails() {
 
           {/* Right Column - Reviews List */}
           <div className="lg:col-span-2">
-            <ReviewsList reviews={reviews} />
+            <ReviewsList reviews={reviews} courseId={id} />
           </div>
         </div>
       </div>

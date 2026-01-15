@@ -7,11 +7,12 @@
  * 
  * Props:
  * - reviews: Array of review objects to display
+ * - courseId: ID of the course (passed to ReviewCard for voting functionality)
  */
 
 import ReviewCard from './ReviewCard';
 
-function ReviewsList({ reviews }) {
+function ReviewsList({ reviews, courseId }) {
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -27,7 +28,11 @@ function ReviewsList({ reviews }) {
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
+            <ReviewCard 
+              key={review.id} 
+              review={review} 
+              courseId={courseId} 
+            />
           ))}
         </div>
       )}

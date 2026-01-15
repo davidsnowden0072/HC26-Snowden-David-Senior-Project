@@ -22,6 +22,6 @@ export const RATING_GOOD = 3.0;
 export const COLORS = {
   GREAT: 'bg-green-500',    // Green for great
   GOOD: 'bg-yellow-400',    // Yellow for good
-  OKAY: 'bg-red-500',       // Red for poor (flipped!)
+  OKAY: 'bg-red-500',       // Red for poor 
   NONE: 'bg-gray-400'       // Gray for no rating
 };

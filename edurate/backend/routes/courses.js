@@ -6,7 +6,9 @@
  * - GET /api/courses - Get all courses with average ratings
  * - GET /api/courses/:id - Get single course with average rating
  * - GET /api/courses/:id/reviews - Get all reviews for a course
- * - POST /api/courses/:id/reviews - Submit a new review
+ * - POST /api/courses/:id/reviews - Submit a new review 
+ * - POST /api/courses/:courseId/reviews/:reviewId/upvote - Upvote a review 
+ * - POST /api/courses/:courseId/reviews/:reviewId/downvote - Downvote a review 
  */
 
 import express from 'express';
@@ -189,10 +191,6 @@ router.post('/:id/reviews', async (req, res) => {
 
     console.log("📍 Submitting review for course ID:", id);
 
-    // ----------------------------
-    // 🔥 FIXED VALIDATION LOGIC
-    // ----------------------------
-
     // Rating must exist (0 is NOT treated as missing)
     if (rating === undefined || rating === null) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -217,9 +215,7 @@ router.post('/:id/reviews', async (req, res) => {
       });
     }
 
-    // ----------------------------
     // Insert review
-    // ----------------------------
     const { data, error } = await supabase
       .from("reviews")
       .insert([{ 
@@ -246,6 +242,90 @@ router.post('/:id/reviews', async (req, res) => {
   } catch (err) {
     console.error("💥 Error in POST /api/courses/:id/reviews:", err.message);
     res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      error: err.message
+    });
+  }
+}); // ✅ This closes the POST review route properly
+
+/**
+ * POST /api/courses/:courseId/reviews/:reviewId/upvote
+ * Increment upvote count for a review
+ */
+router.post('/:courseId/reviews/:reviewId/upvote', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    console.log("📍 Upvoting review ID:", reviewId);
+    
+    // Get current vote counts
+    const { data: review, error: fetchError } = await supabase
+      .from("reviews")
+      .select("upvotes")
+      .eq("id", reviewId)
+      .single();
+    
+    if (fetchError) throw fetchError;
+    
+    // Increment upvote
+    const { data, error } = await supabase
+      .from("reviews")
+      .update({ upvotes: review.upvotes + 1 })
+      .eq("id", reviewId)
+      .select();
+    
+    if (error) throw error;
+    
+    console.log("✅ Review upvoted");
+    
+    res.json({
+      success: true,
+      data: data[0]
+    });
+  } catch (err) {
+    console.error("💥 Error upvoting:", err.message);
+    res.status(HTTP_STATUS.SERVER_ERROR).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+
+/**
+ * POST /api/courses/:courseId/reviews/:reviewId/downvote
+ * Increment downvote count for a review
+ */
+router.post('/:courseId/reviews/:reviewId/downvote', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    console.log("📍 Downvoting review ID:", reviewId);
+    
+    // Get current vote counts
+    const { data: review, error: fetchError } = await supabase
+      .from("reviews")
+      .select("downvotes")
+      .eq("id", reviewId)
+      .single();
+    
+    if (fetchError) throw fetchError;
+    
+    // Increment downvote
+    const { data, error } = await supabase
+      .from("reviews")
+      .update({ downvotes: review.downvotes + 1 })
+      .eq("id", reviewId)
+      .select();
+    
+    if (error) throw error;
+    
+    console.log("✅ Review downvoted");
+    
+    res.json({
+      success: true,
+      data: data[0]
+    });
+  } catch (err) {
+    console.error("💥 Error downvoting:", err.message);
+    res.status(HTTP_STATUS.SERVER_ERROR).json({
       success: false,
       error: err.message
     });

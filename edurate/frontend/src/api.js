@@ -44,3 +44,26 @@ export async function submitReview(courseId, reviewData) {
   return data;
 } 
 //*******End of fetching functions for reviews**********
+// Upvote a review
+export async function upvoteReview(courseId, reviewId) {
+  const response = await fetch(`${API_URL}/api/courses/${courseId}/reviews/${reviewId}/upvote`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
+// Downvote a review
+export async function downvoteReview(courseId, reviewId) {
+  const response = await fetch(`${API_URL}/api/courses/${courseId}/reviews/${reviewId}/downvote`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+}
