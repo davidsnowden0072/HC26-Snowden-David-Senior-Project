@@ -3,7 +3,7 @@
  * 
  * Routes for course and review operations.
  * Handles:
- * - GET /api/courses - Get all courses with average ratings
+ * - GET /api/courses - Get all courses with average ratings (OPTIMIZED)
  * - GET /api/courses/:id - Get single course with average rating
  * - GET /api/courses/:id/reviews - Get all reviews for a course
  * - POST /api/courses/:id/reviews - Submit a new review 
@@ -20,37 +20,40 @@ const router = express.Router();
 /**
  * GET /api/courses
  * Fetch all courses with their average ratings and review counts
+ * OPTIMIZED: Uses database JOIN instead of fetching all reviews separately
  */
 router.get('/', async (req, res) => {
   try {
     console.log("📍 Fetching all courses with ratings");
     
-    // Get all courses
-    const { data: courses, error: coursesError } = await supabase
+    // Use a single query with Supabase's JOIN
+    const { data: courses, error } = await supabase
       .from("courses")
-      .select("*")
+      .select(`
+        *,
+        reviews (
+          rating
+        )
+      `)
       .order("created_at", { ascending: false });
 
-    if (coursesError) throw coursesError;
+    if (error) throw error;
     
-    // Get all reviews
-    const { data: allReviews, error: reviewsError } = await supabase
-      .from("reviews")
-      .select("course_id, rating");
-
-    if (reviewsError) throw reviewsError;
-    
-    // Calculate ratings for each course
+    // Calculate ratings from the joined data
     const coursesWithRatings = courses.map(course => {
-      const courseReviews = allReviews.filter(r => r.course_id === course.id);
-      const avgRating = courseReviews.length > 0
-        ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
+      const reviews = course.reviews || [];
+      const avgRating = reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         : 0;
       
       return {
-        ...course,
+        id: course.id,
+        created_at: course.created_at,
+        Department: course.Department,
+        Course_ID: course.Course_ID,
+        Course_name: course.Course_name,
         rating: avgRating,
-        numReviews: courseReviews.length
+        numReviews: reviews.length
       };
     });
     
@@ -246,7 +249,7 @@ router.post('/:id/reviews', async (req, res) => {
       error: err.message
     });
   }
-}); // ✅ This closes the POST review route properly
+});
 
 /**
  * POST /api/courses/:courseId/reviews/:reviewId/upvote
