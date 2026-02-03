@@ -220,10 +220,25 @@ router.post('/:id/reviews', async (req, res) => {
     }
 
     // Check for inappropriate language using leo-profanity
-    const foundInComment = filter.check(comment);
-    const foundInName = student_name ? filter.check(student_name) : [];
+    // Simple word-by-word check with error handling
+    const hasProfanityInComment = comment.split(' ').some(word => {
+      try {
+        return filter.check(word).length > 0;
+      } catch (err) {
+        console.log("Filter check error:", err.message);
+        return false;
+      }
+    });
 
-    if (foundInComment.length > 0 || foundInName.length > 0) {
+    const hasProfanityInName = student_name ? student_name.split(' ').some(word => {
+      try {
+        return filter.check(word).length > 0;
+      } catch (err) {
+        return false;
+      }
+    }) : false;
+
+    if (hasProfanityInComment || hasProfanityInName) {
       console.log("⚠️ Review rejected due to inappropriate language");
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
