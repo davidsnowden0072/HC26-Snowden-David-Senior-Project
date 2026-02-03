@@ -218,16 +218,20 @@ router.post('/:id/reviews', async (req, res) => {
       });
     }
 
-    // Simple profanity filter with common inappropriate words
+    // Simple profanity filter with common inappropriate words (whole word matching)
     const profanityList = [
       'fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'bastard', 
-      'crap', 'piss', 'dick', 'cock', 'pussy', 'fag', 'slut', 'whore', 'sucks', 'stupid'
+      'crap', 'piss', 'dick', 'cock', 'pussy', 'fag', 'slut', 'whore'
     ];
 
     const checkProfanity = (text) => {
       if (!text) return false;
       const lowerText = text.toLowerCase();
-      return profanityList.some(word => lowerText.includes(word));
+      // Match whole words only using word boundaries
+      return profanityList.some(word => {
+        const regex = new RegExp(`\\b${word}\\b`, 'i');
+        return regex.test(lowerText);
+      });
     };
 
     if (checkProfanity(comment) || checkProfanity(student_name)) {
