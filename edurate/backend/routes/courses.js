@@ -14,6 +14,7 @@
 import express from 'express';
 import { supabase } from '../config/supabase.js';
 import { MIN_RATING, MAX_RATING, HTTP_STATUS } from '../constants.js';
+import * as filter from 'leo-profanity';
 
 const router = express.Router();
 
@@ -218,10 +219,8 @@ router.post('/:id/reviews', async (req, res) => {
       });
     }
 
-    // Check for inappropriate language using dynamic import
-    const { default: Filter } = await import('bad-words');
-    const filter = new Filter();
-    if (filter.isProfane(comment) || (student_name && filter.isProfane(student_name))) {
+    // Check for inappropriate language using leo-profanity
+    if (filter.check(comment) || (student_name && filter.check(student_name))) {
       console.log("⚠️ Review rejected due to inappropriate language");
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
