@@ -14,7 +14,6 @@
 import express from 'express';
 import { supabase } from '../config/supabase.js';
 import { MIN_RATING, MAX_RATING, HTTP_STATUS } from '../constants.js';
-import * as filter from 'leo-profanity';
 
 const router = express.Router();
 
@@ -219,26 +218,19 @@ router.post('/:id/reviews', async (req, res) => {
       });
     }
 
-    // Check for inappropriate language using leo-profanity
-    // Simple word-by-word check with error handling
-    const hasProfanityInComment = comment.split(' ').some(word => {
-      try {
-        return filter.check(word).length > 0;
-      } catch (err) {
-        console.log("Filter check error:", err.message);
-        return false;
-      }
-    });
+    // Simple profanity filter with common inappropriate words
+    const profanityList = [
+      'fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'bastard', 
+      'crap', 'piss', 'dick', 'cock', 'pussy', 'fag', 'slut', 'whore', 'sucks', 'stupid'
+    ];
 
-    const hasProfanityInName = student_name ? student_name.split(' ').some(word => {
-      try {
-        return filter.check(word).length > 0;
-      } catch (err) {
-        return false;
-      }
-    }) : false;
+    const checkProfanity = (text) => {
+      if (!text) return false;
+      const lowerText = text.toLowerCase();
+      return profanityList.some(word => lowerText.includes(word));
+    };
 
-    if (hasProfanityInComment || hasProfanityInName) {
+    if (checkProfanity(comment) || checkProfanity(student_name)) {
       console.log("⚠️ Review rejected due to inappropriate language");
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
