@@ -220,7 +220,10 @@ router.post('/:id/reviews', async (req, res) => {
     }
 
     // Check for inappropriate language using leo-profanity
-    if (filter.check(comment) || (student_name && filter.check(student_name))) {
+    const foundInComment = filter.check(comment);
+    const foundInName = student_name ? filter.check(student_name) : [];
+
+    if (foundInComment.length > 0 || foundInName.length > 0) {
       console.log("⚠️ Review rejected due to inappropriate language");
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
