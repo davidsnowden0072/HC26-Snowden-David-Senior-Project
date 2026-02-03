@@ -221,7 +221,7 @@ router.post('/:id/reviews', async (req, res) => {
     // Simple profanity filter with common inappropriate words (whole word matching)
     const profanityList = [
       'fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'bastard', 
-      'crap', 'piss', 'dick', 'cock', 'pussy', 'fag', 'slut', 'whore'
+      'crap', 'piss', 'dick', 'cock', 'pussy', 'fag', 'slut', 'whore', 'sucks', 'crap'
     ];
 
     const checkProfanity = (text) => {
