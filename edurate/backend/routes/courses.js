@@ -6,7 +6,7 @@
  * - GET /api/courses - Get all courses with average ratings (OPTIMIZED)
  * - GET /api/courses/:id - Get single course with average rating
  * - GET /api/courses/:id/reviews - Get all reviews for a course
- * - POST /api/courses/:id/reviews - Submit a new review 
+ * - POST /api/courses/:id/reviews - Submit a new review with profanity filtering
  * - POST /api/courses/:courseId/reviews/:reviewId/upvote - Upvote a review 
  * - POST /api/courses/:courseId/reviews/:reviewId/downvote - Downvote a review 
  */
@@ -185,7 +185,7 @@ router.get('/:id/reviews', async (req, res) => {
 
 /**
  * POST /api/courses/:id/reviews
- * Submit a new review for a course
+ * Submit a new review for a course with profanity filtering
  */
 router.post('/:id/reviews', async (req, res) => {
   try {
@@ -215,6 +215,17 @@ router.post('/:id/reviews', async (req, res) => {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Rating and comment are required"
+      });
+    }
+
+    // Check for inappropriate language using dynamic import
+    const { default: Filter } = await import('bad-words');
+    const filter = new Filter();
+    if (filter.isProfane(comment) || (student_name && filter.isProfane(student_name))) {
+      console.log("⚠️ Review rejected due to inappropriate language");
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        error: "Review contains inappropriate language. Please keep feedback professional."
       });
     }
 
